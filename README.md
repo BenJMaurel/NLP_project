@@ -49,4 +49,6 @@ pip install -r requirements.txt
 
 ### Processing des données
 
-Nous avons mis directement les fichiers .npy correspondant aux extractions des features de chaque couches du modèle ROBERTA-base. Vous pouvez les retrouver dans le drive mis à disposition pour cet effet au lien suivant : https://drive.google.com/drive/folders/1nhwBmUW-fo12kIPIX9mrGt2X8nWvekvy?usp=sharing". On retrouve les embedding de sst-2 train, sst-2 test, news20, trec et wm16.
+Nous avons mis directement les fichiers .npy correspondant aux extractions des features de chaque couches du modèle ROBERTA-base. Vous pouvez les retrouver dans le drive mis à disposition pour cet effet au lien suivant : https://drive.google.com/drive/folders/1nhwBmUW-fo12kIPIX9mrGt2X8nWvekvy?usp=sharing. On retrouve les embedding de sst-2 train, sst-2 test, news20, trec et wm16.
+
+Pour utiliser ces fichiers dans le notebook de colab, il est nécéssaire de créer un raccourci vers votre drive (clic droit sur le dossier puis ajouter un raccourci)
