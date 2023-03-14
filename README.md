@@ -9,13 +9,9 @@ Projet pour le cours **Machine Learning for Natural Language Processing** de l'E
 
 Notre rapport est disponible [ici]() à la racine du projet.
 
-### Le package
+### Exemples
+Voici un lien vers un colab où l'on peut reproduire les graphes utilisés dans notre projet.
 
-
-### Les notebooks
-
-
-### Le reste
 
 
 ## Installation
@@ -53,27 +49,4 @@ pip install -r requirements.txt
 
 ### Processing des données
 
-Pour générer les données à partir du fichier brut, il faut lancer le script `process_data.py` :
-
-```python
-python smc_movement_models/process_data.py
-# Pour plus d'informations
-# python smc_movement_models/process_data.py --help
-```
-
-### `pre-commit`
-
-Pour activer les pre-commit qui formattent le code avant chaque commit :
-
-```bash
-pre-commit install
-pre-commit run --all-files  # Pour installer les modules et lancer les tests
-```
-
-![Exemple de pre-commit](images/pre-commit-exemple.png)
-
-Pour forcer un commit sans vérifier :
-
-```bash
-git commit -m "..." --no-verify
-```
+Nous avons mis directement les fichiers .npy correspondant aux extractions des features de chaque couches du modèle ROBERTA-base. Vous pouvez les retrouver dans "/embeding/", on retrouve les embedding de sst-2 train, sst-2 test, news20, trec et wm16.
