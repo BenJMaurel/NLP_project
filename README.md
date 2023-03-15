@@ -1,54 +1,25 @@
-# Safe AI: Toward Safer Systems Against Data Drift
+# Understanding the Latent Spaces of OOD Detectors: A Study of Mahalanobis and IRW Approaches
 
-Projet pour le cours **Machine Learning for Natural Language Processing** de l'ENSAE.
+Research project for the course **Machine Learning for Natural Language Processing** at ENSAE.
 
 * Louise Demoor
 * Benjamin Maurel
 
 ## Introduction
 
-Notre rapport est disponible [ici]() à la racine du projet.
+Our paper is available [here]() at the root of the project.
 
 ### Exemples
-Voici un lien vers un colab où l'on peut reproduire les graphes utilisés dans notre projet.
+Here is a link to a colab where you can reproduce the graphs and results presented in our paper:
 
+https://colab.research.google.com/drive/1aZj7eVN7S7oqTLHCj3XkVG5oiyxEKzT3?usp=sharing
 
+### Data
 
-## Installation
+We have put directly the .npy files corresponding to the feature extractions of each layer of the ROBERTA-base model. You can find them in the drive provided for this purpose at the following link: https://drive.google.com/drive/folders/1nhwBmUW-fo12kIPIX9mrGt2X8nWvekvy?usp=sharing. You can find the embedding of sst-2 train, sst-2 test, news20, trec and wm16.
 
-Avant toutes choses, il faut se déplacer dans le dossier `package`:
+To use these files in colab's notebook, it is necessary to create a shortcut to your drive (right click on the folder then add a shortcut)
 
-```bash
-cd /path/to/package
-```
+## Credits
 
-### Avec [`poetry`](https://python-poetry.org/)
-
-```bash
-# Creation d'un environement virtuel et installation des packages
-poetry install
-
-# Activation de l'environement
-poetry shell  # sub shell
-# OU source $(poetry env info --path)/bin/activate  # activer l'environement dans le shell actuel
-```
-
-### Avec `pip`
-
-```bash
-# Creation d'un environement virtuel
-python -m venv .venv
-
-# Activation de l'environement
-.venv/Script/activate  # pour Windows
-# OU source .venv/bin/activate  # pour Linux / MacOS
-
-# Installation des packages
-pip install -r requirements.txt
-```
-
-### Processing des données
-
-Nous avons mis directement les fichiers .npy correspondant aux extractions des features de chaque couches du modèle ROBERTA-base. Vous pouvez les retrouver dans le drive mis à disposition pour cet effet au lien suivant : https://drive.google.com/drive/folders/1nhwBmUW-fo12kIPIX9mrGt2X8nWvekvy?usp=sharing. On retrouve les embedding de sst-2 train, sst-2 test, news20, trec et wm16.
-
-Pour utiliser ces fichiers dans le notebook de colab, il est nécéssaire de créer un raccourci vers votre drive (clic droit sur le dossier puis ajouter un raccourci)
+All the files inside lib are extracted from https://github.com/lancopku/Avg-Avg. 
