@@ -5,6 +5,11 @@ Research project for the course **Machine Learning for Natural Language Processi
 * Louise Demoor
 * Benjamin Maurel
 
+This project aims to address concerns about the reliability of large neural networks in Natural Language Processing (NLP).
+While state-of-the-art models perform well on input data that is similar to their training datasets, they can experience dysfunction in NLP contexts due to the constantly evolving nature of languages and distributional shifts. To overcome this challenge, the project proposes measuring and detecting distributional shifts in different corpus/sentences using the latent representations of tokens, which can be analyzed using classical discrepancy measure tools adapted to the high-dimensional nature of transformers layers.
+
+In this project we focus on understanding why using the information presents on all the layers can be usefull for Out Of Distribution detectors. Our main contribution relies on visualisations and simple heuristic to better understand the evolution of latents spaces inside a transformer.
+
 ## Introduction
 
 Our paper is available [here]() at the root of the project.
