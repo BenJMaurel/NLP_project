@@ -373,7 +373,7 @@ kiwisolver==1.4.4 ; python_full_version > "3.8.0" and python_version < "3.11" \
     --hash=sha256:f6cb459eea32a4e2cf18ba5fcece2dbdf496384413bc1bae15583f19e567f3b2 \
     --hash=sha256:f8ad8285b01b0d4695102546b342b493b3ccc6781fc28c8c6a1bb63e95d22f09 \
     --hash=sha256:f9f39e2f049db33a908319cf46624a569b36983c7c78318e9726a4cb8923b26c
-loguru==0.6.0
+loguru==0.6.0 ;
 llvmlite==0.39.1 ; python_full_version > "3.8.0" and python_version < "3.11" \
     --hash=sha256:03aee0ccd81735696474dc4f8b6be60774892a2929d6c05d093d17392c237f32 \
     --hash=sha256:1578f5000fdce513712e99543c50e93758a954297575610f48cb1fd71b27c08a \
@@ -1014,8 +1014,8 @@ tqdm==4.64.1 ; python_full_version > "3.8.0" and python_version < "3.11" \
 traitlets==5.8.0 ; python_full_version > "3.8.0" and python_version < "3.11" \
     --hash=sha256:6cc57d6dc28c85d5365961726ffd19b538739347749e13ebe34e03323a0e8f84 \
     --hash=sha256:c864831efa0ba6576d09b44884b34e41defc18c0d7e720b4a2d6698c842cab3e
-umap-learn
-umap-learn[plot]
+umap-learn ;
+umap-learn[plot] ;
 uri-template==1.2.0 ; python_full_version > "3.8.0" and python_version < "3.11" \
     --hash=sha256:934e4d09d108b70eb8a24410af8615294d09d279ce0e7cbcdaef1bd21f932b06 \
     --hash=sha256:f1699c77b73b925cf4937eae31ab282a86dc885c333f2e942513f08f691fc7db
