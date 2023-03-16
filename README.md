@@ -22,4 +22,5 @@ To use these files in colab's notebook, it is necessary to create a shortcut to 
 
 ## Credits
 
-All the files inside lib are extracted from https://github.com/lancopku/Avg-Avg. 
+The lib folder relies mainly on ressources from https://github.com/lancopku/Avg-Avg. 
+We thank the original authors for their open-sourcing.
