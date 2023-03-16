@@ -1,90 +1,64 @@
-import numpy as np
-import os
-from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
-from sklearn.covariance import EmpiricalCovariance, MinCovDet
-import sklearn.covariance
-import torch
-from tqdm import tqdm
-import umap
-from sklearn.preprocessing import StandardScaler
-from lib.metrics import get_metrics
-
-# directory = 'output'
-
-# # for name in os.listdir(directory):
-# #     if 
-# #     clse = np.load(directory + "/" + name)
-# #     import pdb; pdb.set_trace()
-# #     print(clse.shape)
-
-# input_dir = directory
-# token_pooling = "avg"
-# ood_datasets = "20news,trec,wmt16"
-# #ood_datasets = "trec"
-
-# ind_train_features = np.load(
-#     '{}/{}_ind_train_features.npy'.format(input_dir, token_pooling))
-# num_layers = ind_train_features.shape[0] - 1
-# ind_train_labels = np.load('{}/{}_ind_train_labels.npy'.format(input_dir, token_pooling))
-# ind_test_features = np.load('{}/{}_ind_test_features.npy'.format(input_dir, token_pooling))
-# ind_test_labels = np.load('{}/{}_ind_test_labels.npy'.format(input_dir, token_pooling))
-# ind_test_scores_list = []
-# ood_test_scores_list = [[] for _ in range(len(ood_datasets.split(',')))]
-# ood_test_features_list = []
-# for ood_dataset in ood_datasets.split(','):
-#     ood_test_features = np.load(
-#         '{}/{}_ood_features_{}.npy'.format(input_dir, token_pooling, ood_dataset))
-#     ood_test_features_list.append(ood_test_features)
-
-
-def plot_PCA(ind_test_features, ind_train_features, ood_features_list, mode = 'avg'):
-    pca = PCA(n_components=2)
-    if mode == 'avg':
-        ind_train = np.mean(ind_train_features, axis = 0)
-        ind_test = np.mean(ind_test_features, axis = 0)
-        ood_list = [np.mean(ood_test, axis = 0) for ood_test in ood_test_features_list]
-    else:
-        ind_train = ind_train_features[-1]
-        ind_test = ind_test_features[-1]
-        ood_list = [ood_test[-1] for ood_test in ood_test_features_list]
-
-    X_pca = pca.fit_transform(ind_train)
-
-    # Plot the results
+def plot_PCA(ind_test_features, ind_test_labels, ind_train_features, ood_features, save=False, i=str(-1)):
+    """Plots the results of PCA applied to the input data.
     
-    X_pca = pca.transform(ind_test)
-    plt.scatter(X_pca[:, 0], X_pca[:, 1], c = 'r', alpha = 0.5)
-    for ood_test in ood_list:
-        X_pca = pca.transform(ood_test)
-        plt.scatter(X_pca[:, 0], X_pca[:, 1], alpha = 0.5)
-    plt.xlabel('PC1')
-    plt.ylabel('PC2')
-    plt.show()
-
-def new_plot_PCA(ind_test_features, ind_test_labels, ind_train_features, ood_features, save = False, i = str(-1)):
+    Args:
+        ind_test_features (np.ndarray): In-distribution test features.
+        ind_test_labels (np.ndarray): In-distribution test labels.
+        ind_train_features (np.ndarray): In-distribution train features.
+        ood_features (np.ndarray): Out-of-distribution test features.
+        save (bool): Whether to save the plot or not.
+        i (str): Optional identifier to add to the saved file.
+    """
     pca = PCA(n_components=2)
-    mean = np.mean(ind_train_features, axis = 0)
-    var = np.var(ind_train_features, axis = 0)
-    scaled_data = (ind_train_features - mean)/var
+    scaler = StandardScaler()
+    scaler.fit(ind_train_features)
+    scaled_data = scaler.transform(ind_train_features)
     pca.fit(scaled_data)
-    scaled_data = (ind_test_features - mean)/var
+    scaled_data = scaler.transform(ind_test_features)
     embedding = pca.transform(scaled_data)
     fig, ax = plt.subplots()
-    ax.scatter(
-    embedding[:, 0],
-    embedding[:, 1], c = ind_test_labels, alpha = 0.2)
-    scaled_data = (ood_features - mean)/var
+    ax.scatter(embedding[:, 0], embedding[:, 1], c=ind_test_labels, alpha=0.2)
+    scaled_data = scaler.transform(ood_features)
     embedding = pca.transform(scaled_data)
-    ax.scatter(
-    embedding[:, 0],
-    embedding[:, 1], c = 'blue', alpha = 0.2)
+    ax.scatter(embedding[:, 0], embedding[:, 1], c='blue', alpha=0.2)
     if save:
-        fig.savefig('PCA_mean' + str(i) + '.png', dpi=300)
-        return
-    ax.show()
+        fig.savefig(f'PCA_mean{i}.png', dpi=300)
+        plt.close()  # close the figure to avoid memory leaks
+    else:
+        plt.show()
 
-def plot_UMAP(ind_test_features, ind_test_labels, ind_train_features, ood_features, save = False, i = str(-1)):
+def plot_UMAP(ind_test_features, ind_test_labels, ind_train_features, ood_features, save=False, i=str(-1)):
+    """Plots the results of UMAP applied to the input data.
+    
+    Args:
+        ind_test_features (np.ndarray): In-distribution test features.
+        ind_test_labels (np.ndarray): In-distribution test labels.
+        ind_train_features (np.ndarray): In-distribution train features.
+        ood_features (np.ndarray): Out-of-distribution test features.
+        save (bool): Whether to save the plot or not.
+        i (str): Optional identifier to add to the saved file.
+    """
+    reducer = umap.UMAP()
+    scaler = StandardScaler()
+    scaler.fit(ind_train_features)
+    scaled_data = scaler.transform(ind_train_features)
+    reducer.fit(scaled_data)
+    scaled_data = scaler.transform(ind_test_features)
+    embedding = reducer.transform(scaled_data)
+    fig, ax = plt.subplots()
+    ax.scatter(embedding[:, 0], embedding[:, 1], c=ind_test_labels, alpha=0.2)
+    scaled_data = scaler.transform(ood_features)
+    embedding = reducer.transform(scaled_data)
+    ax.scatter(embedding[:, 0], embedding[:, 1], c='blue', alpha=0.2)
+    if save:
+        fig.savefig(f'Umap_mean{i}.png', dpi=300)
+        plt.close()  # close the figure to avoid memory leaks
+    else:
+        plt.show()
+
+def plot_UMAP_fpr(ind_test_score, ood_test_score, ind_test_features, ind_test_labels, ind_train_features, ood_features, save = False, i = str(-1)):
+    from lib.metrics import get_is_pos
+    mask = get_is_pos(ind_test_score, ood_test_score, "largest2smallest")
     reducer = umap.UMAP()
     mean = np.mean(ind_train_features, axis = 0)
     var = np.var(ind_train_features, axis = 0)
@@ -92,73 +66,131 @@ def plot_UMAP(ind_test_features, ind_test_labels, ind_train_features, ood_featur
     reducer.fit(scaled_data)
     scaled_data = (ind_test_features - mean)/var
     embedding = reducer.transform(scaled_data)
+    
     fig, ax = plt.subplots()
     ax.scatter(
     embedding[:, 0],
     embedding[:, 1], c = ind_test_labels, alpha = 0.2)
+    mask_1 = mask[:len(embedding)]
+    embedding = embedding[~mask_1]
+    ax.scatter(
+    embedding[:, 0],
+    embedding[:, 1], c = 'r', alpha = 0.8 )
+
     scaled_data = (ood_features - mean)/var
     embedding = reducer.transform(scaled_data)
     ax.scatter(
     embedding[:, 0],
     embedding[:, 1], c = 'blue', alpha = 0.2)
-    if save:
-        fig.savefig('Umap_mean' + str(i) + '.png', dpi=300)
-        return
-    ax.show()
 
-#plot_PCA(ind_test_features, ind_train_features, ood_test_features_list, mode = 'avg')
+    mask_2 = mask[len(ind_test_score):]
+    embedding = embedding[mask_2]
+    ax.scatter(
+    embedding[:, 0],
+    embedding[:, 1], c = 'g', alpha = 0.8 )
+    
+    if save:
+        fig.savefig(f'Umap_mean{i}.png', dpi=300)
+        plt.close()  # close the figure to avoid memory leaks
+    else:
+        plt.show()
 
 def get_distance_score(class_mean, precision, features, measure='maha'):
+    """ Calculate distance scores between features and class means
+        class_mean: list of mean vectors for each class
+        precision: precision matrix for Mahalanobis distance calculation
+        features: array of features to compare to class means
+        measure: distance measure to use (maha, euclid, or cosine)
+    """
+    
+    # Convert inputs to PyTorch tensors
     num_classes = len(class_mean)
     num_samples = len(features)
     class_mean = [torch.from_numpy(m).float() for m in class_mean]
     precision = torch.from_numpy(precision).float()
     features = torch.from_numpy(features).float()
+    
+    # Initialize empty list for scores
     scores = []
+    
+    # Iterate over classes
     for c in range(num_classes):
         centered_features = features.data - class_mean[c]
-        if measure == 'maha':
+        # Calculate distance score based on chosen measure
+        if measure == 'maha': # Mahalanobis distance
             score = -1.0 * torch.mm(torch.mm(centered_features, precision),
                     centered_features.t()).diag()
-        elif measure == 'euclid':
+        elif measure == 'euclid': # Euclidean distance
             score = -1.0*torch.mm(centered_features,
                 centered_features.t()).diag()
-        elif measure == 'cosine':
+        elif measure == 'cosine': # Cosine similarity
             score = torch.tensor([CosineSimilarity()(features[i].reshape(
                 1, -1), class_mean[c].reshape(1, -1)) for i in range(num_samples)])
         else:
             raise ValueError("Unknown distance measure")
         scores.append(score.reshape(-1, 1))
+    
+    # Concatenate scores across classes
     scores = torch.cat(scores, dim=1)  # num_samples, num_classes
+    
+    # Take maximum score across classes for each sample
     scores, _ = torch.max(scores, dim=1)  # num_samples
+    
+    # Convert scores to numpy array and return
     scores = scores.cpu().numpy()
     return scores
 
+
 def get_distance_irw(features, train, n_proj=100):
+    """Calculate distance scores using importance-weighted random projections
+       features: array of features to compare to training set
+        train: array of training set features to compare to
+        n_proj: number of random projections to use
+    """
+    # Convert inputs to PyTorch tensors
     features = torch.from_numpy(features).float()
     train = torch.from_numpy(train).float()
+    
+    # Generate random projection vectors and normalize
     x = torch.randn(n_proj, features.shape[1])
     norms = torch.norm(x, dim=1, keepdim=True)
     v = x / norms
+    
+    # Initialize arrays for distance scores
     tot = torch.zeros(features.shape[0])
     test = torch.zeros(features.shape[0])
+    
+    # Iterate over random projection vectors
     for j, v_j in enumerate(tqdm(v)): 
+        # Calculate inner product between random projection vector and features
         inner_product = v_j@features.T
+        
+        # Calculate importance weights based on whether each feature is closer to the training set or the test set
         inf = (inner_product[:, None] <= torch.mm(train, v_j[:, None]).T).float().mean(dim=1)
         tot += torch.min(inf, 1 - inf)
+    
+    # Average distance scores across random projections
     scores = tot / n_proj
+    
+    # Convert scores to numpy array and return
     scores = scores.cpu().numpy()
     return scores
-     
 
 
 def sample_estimator(features, labels):
+    """
+    Given training features and labels, compute the sample class mean and precision matrix using the group lasso estimator.
+    Args:
+        - features (numpy array): training features
+        - labels (numpy array): corresponding training labels
+    Returns:
+        - sample_class_mean (list): list of sample class means for each class
+        - precision (numpy array): precision matrix computed using the group lasso estimator
+        - mean_tot (list): list with only one element, which is the mean of all features across all classes
+    """
     labels = labels.reshape(-1)
     num_classes = np.unique(labels).shape[0]
-    #group_lasso = EmpiricalCovariance(assume_centered=False)
-    #group_lasso =  MinCovDet(assume_centered=False, random_state=42, support_fraction=1.0)
-    # ShurunkCovariance is more stable and robust where the condition number is large
-    group_lasso = sklearn.covariance.ShrunkCovariance()
+    group_lasso = sklearn.covariance.ShrunkCovariance()  # use the group lasso estimator for covariance
     sample_class_mean = []
     for c in range(num_classes):
         current_class_mean = np.mean(features[labels == c, :], axis=0)
@@ -166,59 +198,21 @@ def sample_estimator(features, labels):
     X = [features[labels == c, :] - sample_class_mean[c] for c in range(num_classes)]
     X = np.concatenate(X, axis=0)
     group_lasso.fit(X)
-    precision = group_lasso.precision_
-    mean_tot = [np.mean(features, axis = 0)]
+    precision = group_lasso.precision_  # compute the precision matrix
+    mean_tot = [np.mean(features, axis=0)]  # compute the mean across all classes
     return sample_class_mean, precision, mean_tot
-
-def all_UMAP():
-    for i in range(len(ind_test_features)):
-        plot_UMAP(ind_test_features[i], ind_test_labels, ind_train_features[i], ood_test_features_list[2][i], True, i)
-
-
-def test_UMAP():
-    for i in range(1, len(ind_test_features)):
-        plot_UMAP(np.mean(ind_test_features[:i], axis = 0), ind_test_labels, np.mean(ind_train_features[:i], axis = 0), np.mean(ood_test_features_list[0][:i], axis = 0), True, i)
-   
-
-
-# new_plot_PCA(np.mean(ind_test_features, axis = 0), ind_test_labels, np.mean(ind_train_features, axis = 0), np.mean(ood_test_features_list[2], axis = 0), True, 0)
-# ood_test_scores_list = [[] for _ in range(len(ood_datasets.split(',')))]
-# ood_irw_score_list = [[] for _ in range(len(ood_datasets.split(',')))]
-# ind_test_score = []
-# num_layers = ind_train_features.shape[0] - 1
-# maha = True
-# avg = True
-
-# if maha:
-#     for layer in tqdm(range(0, num_layers+1)):
-#         ind_test_score.append(get_distance_irw(ind_test_features[layer], ind_train_features[layer]))
-        
-#         # sample_class_mean, precision, mean_tot = sample_estimator(ind_train_features[layer], ind_train_labels)
-#         # ind_test_score.append(get_distance_score(sample_class_mean, precision, ind_test_features[layer]) + get_distance_score(mean_tot, precision, ind_test_features[layer]) )
-#         for i, ood_test in enumerate(ood_test_features_list):
-#             ood_test_scores_list[i].append(get_distance_irw(ood_test[layer], ind_train_features[layer]))
-#             #ood_test_scores_list[i].append(get_distance_score(sample_class_mean, precision, ood_test[layer]) + get_distance_score(mean_tot, precision, ood_test[layer]))
-#     # metrics_tot = []
-#     # for i in range(len(ind_test_features)):
-#     #     metrics_tot.append(get_metrics(ind_test_score[i], ood_test_scores_list[0][i]))
-
-
-# if avg:
-#     ind_irw_score = get_distance_irw(np.mean(ind_test_features, axis = 0), np.mean(ind_train_features, axis = 0))
-#     # sample_class_mean, precision, mean_tot = sample_estimator(np.mean(ind_train_features[:9], axis = 0) , ind_train_labels)
-#     # ind_test_score.append(get_distance_score(sample_class_mean, precision, np.mean(ind_test_features[:9], axis = 0)) + get_distance_score(mean_tot, precision, np.mean(ind_test_features[:9], axis = 0) ))
-#     for i, ood_test in enumerate(ood_test_features_list):
-#         ood_irw_score_list[i].append(get_distance_irw(np.mean(ood_test, axis = 0), np.mean(ind_train_features, axis = 0)))
-#         #ood_test_scores_list[i].append(get_distance_score(sample_class_mean, precision, np.mean(ood_test[:9], axis = 0)) + get_distance_score(mean_tot, precision, np.mean(ood_test[:9], axis = 0) ))
-
-
-
 
 
 def plot_hist(ood, ind):
+    """
+    Plot two histograms side by side for the given OOD and in-distribution scores.
+    Args:
+        - ood (numpy array): OOD test scores
+        - ind (numpy array): in-distribution test scores
+    """
     xmin = min(np.min(ood), np.min(ind))
     xmax = max(np.max(ood), np.max(ind))
-    bin_edges = np.linspace(xmin, xmax, 40)
+    bin_edges = np.linspace(xmin, xmax, 40)  # create equally spaced bins for the histograms
 
     # Plot the histograms with the same bin edges
     plt.hist(ood, color='red', alpha=.5, bins=bin_edges)
@@ -226,71 +220,41 @@ def plot_hist(ood, ind):
 
     plt.show()
 
-def metrics_to_plot(ind_test_score, ood_test_scores_list, ood_mean, ind_mean):
+
+def metrics_to_plot(ind_test_score, ood_test_scores_list, ood_mean, ind_mean, ood_datasets):
+    # Create a figure with two subplots
     fig, (ax1, ax2) = plt.subplots(nrows=2, ncols=1, figsize=(8, 8))
+    # Define a list of colors to use for plotting
     colors = ['r', 'g', 'b']
+    # Loop over the out-of-distribution test scores and plot the metrics
     for j in range(len(ood_test_scores_list)):
+        # Initialize empty lists for storing the metrics
         metrics_tot = []
         AUROC = []
         FPR = []
-        for i in range(len(ind_test_features)):
+        # Loop over the individual test features and compute the metrics
+        for i in range(len(ind_test_score)):
+            # Get the metrics for the current individual and out-of-distribution test features
             metrics= get_metrics(ind_test_score[i], ood_test_scores_list[j][i])
+            # Append the metrics to the list of all metrics
             metrics_tot.append(metrics)
+            # Append the AUROC and FPR to their respective lists
             AUROC.append(metrics['AUROC'])
             FPR.append(metrics['FPR@tpr=0.95'])
+        # Plot the AUROC and FPR for the current out-of-distribution test scores
         ax1.plot(AUROC, label = ood_datasets.split(',')[j], c = colors[j])
         ax2.plot(FPR, label = ood_datasets.split(',')[j], c = colors[j])
+        # Get the metrics for the mean of the individual and out-of-distribution test features
         metrics_mean = get_metrics(ind_mean, ood_mean[j][0])
+        # Add a dashed horizontal line at the mean AUROC and FPR for the current out-of-distribution test scores
         ax1.axhline(metrics_mean['AUROC'], linestyle = 'dashed', c = colors[j])
         ax2.axhline(metrics_mean['FPR@tpr=0.95'], linestyle = 'dashed', c = colors[j])
-
+    # Add legends to the subplots
     ax1.legend()
     ax2.legend()
+    # Set the titles of the subplots
     ax1.set_title("AUROC")
     ax2.set_title("FPR@tpr = 0.95")
-    fig.savefig('metrics/metrics_' + str(np.random.random()) + '.png', dpi=300)
+    # Save the figure to a file with a random filename and display it
+    fig.savefig('metrics_' + str(np.random.random()) + '.png', dpi=300)
     plt.show()
-
-# import pdb; pdb.set_trace() 
-# metrics_to_plot(ind_test_score, ood_test_scores_list, ood_irw_score_list, ind_irw_score)
-
-
-# plt.hist(np.mean(ood_test_scores_list[0], axis = 0), color = 'red', alpha = .5)
-# plt.hist(np.mean(ind_test_score, axis = 0), color = 'blue', alpha = .5)
-# plt.show()
-
-# plt.hist(ood_test_scores_list[0][1], color = 'red', alpha = .5)
-# plt.hist(ind_test_score[1], color = 'blue', alpha = .5)
-# plt.show()
-
-# plot_hist(ood_test_scores_list[0], ind_test_score)
-#import pdb; pdb.set_trace()
-
-
-# for layer in range(1, num_layers+1):
-#     sample_class_mean, precision = sample_estimator(
-#         ind_train_features[layer], ind_train_labels)
-#     ind_scores = get_distance_score(sample_class_mean, precision,
-#                                     ind_test_features[layer], measure=args.distance_metric)
-#     ind_test_scores_list.append(ind_scores)
-#     for i, ood_dataset in enumerate(args.ood_datasets.split(',')):
-#         ood_scores = get_distance_score(sample_class_mean, precision,
-#                                         ood_test_features_list[i][layer], measure=args.distance_metric)
-#         ood_test_scores_list[i].append(ood_scores)
-# ind_test_scores_list = np.transpose(
-#     np.array(ind_test_scores_list), (1, 0))  # num_samples, layers
-# ood_test_scores_list = [np.transpose(
-#     np.array(scores), (1, 0)) for scores in ood_test_scores_list]
-# ind_test_scores = np.sum(ind_test_scores_list, axis=1)
-# ood_metrics_list = []
-# for i, ood_dataset in enumerate(args.ood_datasets.split(',')):
-#     ood_test_scores = np.sum(ood_test_scores_list[i], axis=1)
-#     metrics = get_metrics(ind_test_scores, ood_test_scores)
-#     logger.info('ood dataset: {}'.format(ood_dataset))
-#     logger.info('metrics: {}'.format(metrics))
-#     ood_metrics_list.append(metrics)
-# mean_metrics = {}
-# for k, v in metrics.items():
-#     mean_metrics[k] = sum(
-#         [m[k] for m in ood_metrics_list])/len(ood_metrics_list)
-# logger.info('mean metrics: {}'.format(mean_metrics))
