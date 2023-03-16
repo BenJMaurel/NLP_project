@@ -15,8 +15,7 @@ In this project we focus on understanding why using the information presents on 
 Our paper is available [here]() at the root of the project.
 
 It mainly presents how well choosen visualisations tools (such as UMAP) can help understand how to improve an OOD Detector:
-
-![UMAP visualisation of the last layer with OOD dataset news20. Blue : OOD, Yellow: InD y = 1, Purple: InD y = 0](../tree/main/UMAP/UMAP_12.png)
+![UMAP visualisation of the last layer with OOD dataset news20. Blue : OOD, Yellow: InD y = 1, Purple: InD y = 0](https://user-images.githubusercontent.com/57131516/225563189-23a663bb-85fb-4540-bdbb-7e1ab9a2f34c.png)
 
 This image represents the embeddings of the last layer of the ROBERTA model, fine-tuned with the dataset SST-2. The points represents: in yellow and purple the samples of the test set of SST-2 (yellow means y = 1, purpe means, y = 0) and in blue with have the OOD samples from the 20news dataset. 
 
