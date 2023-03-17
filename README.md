@@ -12,7 +12,7 @@ In this project we focus on understanding why using the information presents on 
 
 ## Introduction
 
-Our paper is available [here](https://github.com/BenJMaurel/NLP_project/blob/main/Understanding%20the%20Latent%20Spaces%20of%20OOD%20Detectors%20A%20Study%20of%20Mahalanobis%20and%20IRW%20Approaches.pdf)
+Our paper is available [here](https://github.com/BenJMaurel/NLP_project/blob/ed46e516a04d6acfc3f4210d508841911595fbc2/NLP_project_1_LD_BM.pdf)
 
 It mainly presents how well choosen visualisations tools (such as UMAP) can help understand how to improve an OOD Detector:
 ![UMAP visualisation of the last layer with OOD dataset news20. Blue : OOD, Yellow: InD y = 1, Purple: InD y = 0](https://user-images.githubusercontent.com/57131516/225563189-23a663bb-85fb-4540-bdbb-7e1ab9a2f34c.png)
